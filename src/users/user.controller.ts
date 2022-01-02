@@ -1,7 +1,7 @@
 import {BaseController} from '../common/base.controller';
-import {IControllerRoute} from '../common/route.interface';
 import {NextFunction, Request, Response} from 'express';
 import {LoggerService} from '../logger/logger.service';
+import {HttpError} from '../errors/http.error';
 
 export class UserController extends BaseController {
 
@@ -14,11 +14,12 @@ export class UserController extends BaseController {
 
 
     postLogin(req: Request, res: Response, next: NextFunction) {
-        this.ok(res, 'login')
+        next(new HttpError(402, 'Authorization error', 'Login'))
     }
 
     postRegister(req: Request, res: Response, next: NextFunction) {
         this.ok(res, 'register')
+
     }
 
 

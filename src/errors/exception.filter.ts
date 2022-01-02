@@ -1,7 +1,7 @@
-import {Request, Response} from 'express';
+import {NextFunction, Request, Response} from 'express';
 import {LoggerService} from '../logger/logger.service';
 import {IExceptionFilter} from './exception.filter.interface';
-import {HttpErrorClass} from './http-error.class';
+import {HttpError} from './http.error';
 
 export class ExceptionFilter implements IExceptionFilter {
     logger: LoggerService
@@ -11,13 +11,13 @@ export class ExceptionFilter implements IExceptionFilter {
     }
 
 
-    catch(error: Error | HttpErrorClass, req: Request, res: Response) {
-        if (error instanceof HttpErrorClass) {
-            this.logger.error(`[${error.context}] Error: ${error.statusCode}:${error.message}`)
-            res.status(error.statusCode).send({err: error.message})
+    catch(err: Error | HttpError, req: Request, res: Response,next:NextFunction) {
+        if (err instanceof HttpError) {
+            this.logger.error(`[${err.context}] Error ${err.statusCode}:${err.message}`)
+            res.status(err.statusCode).send({err: err.message})
         } else {
-            this.logger.error(`${error.message}`)
-            res.status(500).send({err: error.message})
+            this.logger.error(`${err.message}`)
+            res.status(500).send({err: err.message})
         }
     }
 
