@@ -1,23 +1,32 @@
 {
-  "name": "my-api",
-  "version": "1.0.0",
-  "description": "",
-  "main": "src/index.ts",
-  "type": "commonjs",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node ./dist/main.js",
-    "build": "tsc"
-  },
-  "author": "Denis Tatarinov",
-  "license": "ISC",
-  "dependencies": {
-    "express": "^4.17.2",
-    "inversify": "^6.0.1",
-    "reflect-metadata": "^0.1.13",
-    "tslog": "^3.3.1"
-  },
-  "devDependencies": {
-    "@types/express": "^4.17.13"
-  }
+	"name": "my-api",
+	"version": "1.0.0",
+	"description": "",
+	"main": "src/index.ts",
+	"type": "commonjs",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1",
+		"start": "node ./dist/main.js",
+		"build": "tsc",
+		"lint": "eslint ./src/**",
+		"lint:fix": "eslint ./src/** --fix",
+		"prettier": "prettier --write ./**"
+	},
+	"author": "Denis Tatarinov",
+	"license": "ISC",
+	"dependencies": {
+		"express": "^4.17.2",
+		"inversify": "^6.0.1",
+		"reflect-metadata": "^0.1.13",
+		"tslog": "^3.3.1"
+	},
+	"devDependencies": {
+		"@types/express": "^4.17.13",
+		"@typescript-eslint/eslint-plugin": "^5.9.0",
+		"@typescript-eslint/parser": "^5.9.0",
+		"eslint": "^8.6.0",
+		"prettier": "^2.5.1",
+		"eslint-config-prettier": "^8.3.0",
+		"eslint-plugin-prettier": "^4.0.0"
+	}
 }
