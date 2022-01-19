@@ -8,6 +8,9 @@ import { TYPES } from './types';
 import { IExceptionFilter } from './errors/exception.filter.interface';
 import { IUserController } from './users/user.controller.interface';
 import { UsersService } from './users/users.service';
+import { IConfigService } from './config/config.service.interface';
+import { ConfigService } from './config/config.service';
+import { PrismaService } from './database/prisma.service';
 
 export interface IBootstrapReturnInterface {
 	app: App;
@@ -15,10 +18,12 @@ export interface IBootstrapReturnInterface {
 }
 
 export const appBindings = new ContainerModule((bind: interfaces.Bind) => {
-	bind<ILoggerInterface>(TYPES.ILoggerService).to(LoggerService);
+	bind<ILoggerInterface>(TYPES.ILoggerService).to(LoggerService).inSingletonScope();
 	bind<IExceptionFilter>(TYPES.ExceptionFilter).to(ExceptionFilter);
 	bind<IUserController>(TYPES.IUserController).to(UserController);
 	bind<UsersService>(TYPES.UsersService).to(UsersService);
+	bind<PrismaService>(TYPES.PrismaService).to(PrismaService).inSingletonScope();
+	bind<IConfigService>(TYPES.ConfigService).to(ConfigService).inSingletonScope();
 	bind<App>(TYPES.Application).to(App);
 });
 
