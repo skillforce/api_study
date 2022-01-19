@@ -6,21 +6,38 @@ import { inject, injectable } from 'inversify';
 import 'reflect-metadata';
 import { TYPES } from '../types';
 import { IConfigService } from '../config/config.service.interface';
+import { IUsersRepository } from './users.repository.interface';
+import { UserModel } from '@prisma/client';
 
 @injectable()
 export class UsersService implements IUsersServiceInterface {
-	constructor(@inject(TYPES.ConfigService) private configService: IConfigService) {}
+	constructor(
+		@inject(TYPES.ConfigService) private configService: IConfigService,
+		@inject(TYPES.UsersRepository) private usersRepository: IUsersRepository,
+	) {}
 
-	async createUser({ email, name, password }: UserRegisterDto): Promise<User | null> {
+	async createUser({ email, name, password }: UserRegisterDto): Promise<UserModel | null> {
 		const newUser = new User(email, name);
 		const salt = this.configService.get('SALT');
 		await newUser.setPassword(password, Number(salt));
-		return null;
+		const existedUser = await this.usersRepository.find(email);
+		if (existedUser) {
+			return null;
+		}
+		return this.usersRepository.create(newUser);
 	}
 
-	validateUser({ email, password }: UserLoginDto): Promise<boolean> {
-		return new Promise((res, rej) => {
-			res(true);
-		});
+	async validateUser({ email, password }: UserLoginDto): Promise<UserModel | null> {
+		const existedUser = await this.usersRepository.find(email);
+		if (existedUser) {
+			const newUser = new User(existedUser.email, existedUser.name);
+			if (newUser.comparePasswords(password, existedUser.password)) {
+				return existedUser;
+			} else {
+				return null;
+			}
+		} else {
+			return null;
+		}
 	}
 }
