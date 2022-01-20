@@ -30,8 +30,8 @@ export class UsersService implements IUsersServiceInterface {
 	async validateUser({ email, password }: UserLoginDto): Promise<UserModel | null> {
 		const existedUser = await this.usersRepository.find(email);
 		if (existedUser) {
-			const newUser = new User(existedUser.email, existedUser.name);
-			if (newUser.comparePasswords(password, existedUser.password)) {
+			const newUser = new User(existedUser.email, existedUser.name, existedUser.password);
+			if (newUser.comparePasswords(password)) {
 				return existedUser;
 			} else {
 				return null;

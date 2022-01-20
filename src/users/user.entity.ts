@@ -3,7 +3,15 @@ import { hash, compareSync } from 'bcryptjs';
 export class User {
 	private _password: string;
 
-	constructor(private readonly _email: string, private readonly _name: string) {}
+	constructor(
+		private readonly _email: string,
+		private readonly _name: string,
+		passwordHash?: string,
+	) {
+		if (passwordHash) {
+			this._password = passwordHash;
+		}
+	}
 
 	get email(): string {
 		return this._email;
@@ -21,7 +29,7 @@ export class User {
 		this._password = await hash(pass, salt);
 	}
 
-	public comparePasswords(userPass: string, hashPass: string): boolean {
-		return compareSync(userPass, hashPass);
+	public comparePasswords(userPass: string): boolean {
+		return compareSync(userPass, this._password);
 	}
 }

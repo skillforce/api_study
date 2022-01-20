@@ -7,15 +7,18 @@ import 'reflect-metadata';
 import { IUserController } from './user.controller.interface';
 import { UserLoginDto } from './dto/user-login.dto';
 import { UserRegisterDto } from './dto/user-register.dto';
-import { UsersService } from './users.service';
 import { ILoggerInterface } from '../logger/logger.interface';
 import { ValidateMiddleware } from '../common/validate.middleware';
+import { sign } from 'jsonwebtoken';
+import { IConfigService } from '../config/config.service.interface';
+import { IUsersServiceInterface } from './users.service.interface';
 
 @injectable()
 export class UserController extends BaseController implements IUserController {
 	constructor(
 		@inject(TYPES.ILoggerService) private loggerService: ILoggerInterface,
-		@inject(TYPES.UsersService) private UsersService: UsersService,
+		@inject(TYPES.UsersService) private UsersService: IUsersServiceInterface,
+		@inject(TYPES.ConfigService) private configService: IConfigService,
 	) {
 		super(loggerService);
 		this.bindRoutes([
@@ -41,9 +44,10 @@ export class UserController extends BaseController implements IUserController {
 	): Promise<void> {
 		const result = await this.UsersService.validateUser(body);
 		if (!result) {
-			return next(new HttpError(422, 'User or password is wrong', 'Login'));
+			return next(new HttpError(401, 'Authorization Error', 'Login'));
 		}
-		this.ok(res, { email: result.email, id: result.id });
+		const jwt = await this.signJWT(body.email, this.configService.get('SECRET'));
+		this.ok(res, { jwt });
 	}
 
 	async postRegister(
@@ -56,5 +60,26 @@ export class UserController extends BaseController implements IUserController {
 			return next(new HttpError(422, 'The same user is already exist'));
 		}
 		this.ok(res, { email: result.email, id: result.id });
+	}
+
+	private signJWT(email: string, secret: string): Promise<string> {
+		return new Promise<string>((res, rej) => {
+			sign(
+				{
+					email,
+					iat: Math.floor(Date.now() / 1000),
+				},
+				secret,
+				{
+					algorithm: 'HS256',
+				},
+				(err, token) => {
+					if (err) {
+						rej(err);
+					}
+					res(token as string);
+				},
+			);
+		});
 	}
 }
