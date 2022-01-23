@@ -1,4 +1,4 @@
-import { hash, compareSync } from 'bcryptjs';
+import { hash, compareSync, compare } from 'bcryptjs';
 
 export class User {
 	private _password: string;
@@ -29,7 +29,7 @@ export class User {
 		this._password = await hash(pass, salt);
 	}
 
-	public comparePasswords(userPass: string): boolean {
-		return compareSync(userPass, this._password);
+	public async comparePasswords(userPass: string): Promise<boolean> {
+		return compare(userPass, this._password);
 	}
 }

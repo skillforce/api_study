@@ -31,7 +31,7 @@ export class UsersService implements IUsersServiceInterface {
 		const existedUser = await this.usersRepository.find(email);
 		if (existedUser) {
 			const newUser = new User(existedUser.email, existedUser.name, existedUser.password);
-			if (newUser.comparePasswords(password)) {
+			if (await newUser.comparePasswords(password)) {
 				return existedUser;
 			} else {
 				return null;
@@ -39,5 +39,9 @@ export class UsersService implements IUsersServiceInterface {
 		} else {
 			return null;
 		}
+	}
+
+	async getUserInfo(email: string): Promise<UserModel | null> {
+		return this.usersRepository.find(email);
 	}
 }
